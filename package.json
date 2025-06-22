@@ -13,6 +13,12 @@
     "db:studio": "drizzle-kit studio --port 12000"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.22.0",
+    "@clerk/themes": "^2.2.50",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.2.7",
     "@t3-oss/env-nextjs": "^0.13.8",
     "@uploadthing/react": "^7.3.1",
     "class-variance-authority": "^0.7.1",
