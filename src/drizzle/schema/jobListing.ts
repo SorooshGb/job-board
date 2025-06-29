@@ -46,7 +46,7 @@ export const jobListingTypes = [
   'part-time',
   'full-time'
 ] as const;
-export type JobListingType = typeof jobListingStatuses[number];
+export type JobListingType = typeof jobListingTypes[number];
 export const jobListingTypeEnum = pgEnum('job_listings_type', jobListingTypes);
 
 export const JobListingTable = pgTable('job_listings', {
