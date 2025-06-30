@@ -1,5 +1,6 @@
 import {
   ExperienceLevel,
+  JobListingStatus,
   JobListingType,
   LocationRequirement,
   WageInterval
@@ -60,4 +61,51 @@ export function formatExperienceLevel(experienceLevel: ExperienceLevel) {
         `Unknown experience level: ${experienceLevel satisfies never}`
       );
   }
+}
+
+export function formatJobListingStatus(status: JobListingStatus) {
+  switch (status) {
+    case 'published':
+      return 'Active';
+    case 'draft':
+      return 'Draft';
+    case 'delisted':
+      return 'Delisted';
+    default:
+      throw new Error(`Unknown status: ${status satisfies never}`);
+  }
+}
+
+export function formatWage(wage: number, wageInterval: WageInterval) {
+  const wageFormatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+  });
+
+  switch (wageInterval) {
+    case 'hourly':
+      return `${wageFormatter.format(wage)} / hr`;
+    case 'yearly':
+      return wageFormatter.format(wage);
+    default:
+      throw new Error(`Unknown wage interval: ${wageInterval satisfies never}`);
+  }
+}
+
+export function formatJobListingLocation(
+  { stateAbbreviation, city }: {
+    stateAbbreviation: string | null;
+    city: string | null;
+  }
+) {
+  if (stateAbbreviation == null && city == null) return 'None';
+
+  const locationParts = [];
+  if (city != null) locationParts.push(city);
+  if (stateAbbreviation != null) {
+    locationParts.push(stateAbbreviation.toUpperCase());
+  }
+
+  return locationParts.join(', ');
 }
