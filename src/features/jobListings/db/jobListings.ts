@@ -17,3 +17,20 @@ export async function insertJobListing(
 
   return newListing;
 }
+
+export async function updateJobListing(
+  id: string,
+  jobListing: Partial<typeof JobListingTable.$inferInsert>
+) {
+  const [updatedListing] = await db
+    .update(JobListingTable)
+    .set(jobListing)
+    .returning({
+      id: JobListingTable.id,
+      organizationId: JobListingTable.organizationId,
+    });
+
+  revalidateJobListingCache(updatedListing);
+
+  return updatedListing;
+}

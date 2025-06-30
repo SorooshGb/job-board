@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/select';
 import {
   experienceLevels,
+  JobListingTable,
   jobListingTypes,
   locationRequirements,
   wageIntervals
@@ -30,7 +31,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { createJobListing } from '../actions/actions';
+import { createJobListing, updateJobListing } from '../actions/actions';
 import { jobListingSchema } from '../actions/schemas';
 import {
   formatExperienceLevel,
@@ -42,10 +43,26 @@ import { StateSelectItems } from './StateSelectItems';
 
 const NONE_SELECT_VALUE = 'none';
 
-export default function JobListingForm() {
+type JobListingFormProps = {
+  jobListing: Pick<
+    typeof JobListingTable.$inferSelect,
+    | 'title'
+    | 'description'
+    | 'wage'
+    | 'wageInterval'
+    | 'experienceLevel'
+    | 'id'
+    | 'stateAbbreviation'
+    | 'city'
+    | 'type'
+    | 'locationRequirement'
+  >;
+};
+
+export default function JobListingForm({ jobListing }: JobListingFormProps) {
   const form = useForm({
     resolver: zodResolver(jobListingSchema),
-    defaultValues: {
+    defaultValues: jobListing ?? {
       title: '',
       description: '',
       stateAbbreviation: null,
@@ -59,7 +76,10 @@ export default function JobListingForm() {
   });
 
   async function onSubmit(data: z.infer<typeof jobListingSchema>) {
-    const res = await createJobListing(data);
+    const action = jobListing
+      ? updateJobListing.bind(null, jobListing.id)
+      : createJobListing;
+    const res = await action(data);
 
     if (res.error) {
       toast.error(res.message);
