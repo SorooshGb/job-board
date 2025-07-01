@@ -54,7 +54,7 @@ export default function JobListingBadges(
 
   return (
     <>
-      {!isFeatured && (
+      {isFeatured && (
         <Badge
           {...badgeProps}
           className={cn(
