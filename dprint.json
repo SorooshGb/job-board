@@ -8,11 +8,7 @@
     "memberExpression.linePerExpression": true,
     "functionDeclaration.bracePosition": "sameLine",
     "functionExpression.bracePosition": "sameLine",
-    "objectExpression.preferSingleLine": false,
-    "arrayExpression.preferSingleLine": false,
-    "typeLiteral.preferSingleLine": false,
     "objectExpression.trailingCommas": "onlyMultiLine",
-    "typeParameters.preferSingleLine": false,
     "jsxAttributes.preferSingleLine": false
   },
   "malva": {
