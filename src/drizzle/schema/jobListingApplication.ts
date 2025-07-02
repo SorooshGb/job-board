@@ -25,7 +25,7 @@ export const applicationStageEnum = pgEnum(
   applicationStages
 );
 
-export const jobListingApplicationTable = pgTable('job_listing_applications', {
+export const JobListingApplicationTable = pgTable('job_listing_applications', {
   jobListingId: uuid()
     .references(() => JobListingTable.id, {
       onDelete: 'cascade',
@@ -41,14 +41,14 @@ export const jobListingApplicationTable = pgTable('job_listing_applications', {
 }, table => [primaryKey({ columns: [table.jobListingId, table.userId] })]);
 
 export const jobListingApplicationRelations = relations(
-  jobListingApplicationTable,
+  JobListingApplicationTable,
   ({ one }) => ({
     jobListing: one(JobListingTable, {
-      fields: [jobListingApplicationTable.jobListingId],
+      fields: [JobListingApplicationTable.jobListingId],
       references: [JobListingTable.id],
     }),
     user: one(UserTable, {
-      fields: [jobListingApplicationTable.userId],
+      fields: [JobListingApplicationTable.userId],
       references: [UserTable.id],
     }),
   })

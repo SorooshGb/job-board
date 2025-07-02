@@ -9,7 +9,7 @@ import {
   timestamp,
   varchar
 } from 'drizzle-orm/pg-core';
-import { jobListingApplicationTable } from './jobListingApplication';
+import { JobListingApplicationTable } from './jobListingApplication';
 import { OrganizationTable } from './organization';
 import { createdAt, id, updatedAt } from './schemaHelpers';
 
@@ -79,6 +79,6 @@ export const jobListingRelations = relations(
       fields: [JobListingTable.organizationId],
       references: [OrganizationTable.id],
     }),
-    application: many(jobListingApplicationTable),
+    application: many(JobListingApplicationTable),
   })
 );
