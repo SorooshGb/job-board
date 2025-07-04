@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import '@mdxeditor/editor/style.css';
 import { ClerkProvider } from '@/services/clerk/components/ClerkProvider';
+import { UploadThingSSR } from '@/services/uploadthing/components/UploadThingSSR';
 import { Toaster } from 'sonner';
 
 const geistSans = Geist({
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: Readonly<{
         >
           {children}
           <Toaster />
+          <UploadThingSSR />
         </body>
       </html>
     </ClerkProvider>

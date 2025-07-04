@@ -10,6 +10,7 @@ export const env = createEnv({
     DB_NAME: z.string().nonempty(),
     CLERK_SECRET_KEY: z.string().nonempty(),
     CLERK_WEBHOOK_SECRET: z.string().nonempty(),
+    UPLOADTHING_TOKEN: z.string().nonempty(),
   },
   createFinalSchema: env => {
     return z.object(env).transform(val => {
