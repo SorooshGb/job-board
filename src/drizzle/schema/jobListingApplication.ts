@@ -17,28 +17,31 @@ export const applicationStages = [
   'applied',
   'interested',
   'interviewed',
-  'hybrid'
+  'hired'
 ] as const;
-export type ApplicationStage = typeof applicationStages[number];
+export type ApplicationStage = (typeof applicationStages)[number];
 export const applicationStageEnum = pgEnum(
-  'job_listing_application_stage',
+  'job_listing_applications_stage',
   applicationStages
 );
 
-export const JobListingApplicationTable = pgTable('job_listing_applications', {
-  jobListingId: uuid()
-    .references(() => JobListingTable.id, {
-      onDelete: 'cascade',
-    }),
-  userId: varchar().notNull().references(() => UserTable.id, {
-    onDelete: 'cascade',
-  }),
-  coverLetter: text(),
-  rating: integer(),
-  stage: applicationStageEnum().notNull().default('applied'),
-  createdAt,
-  updatedAt,
-}, table => [primaryKey({ columns: [table.jobListingId, table.userId] })]);
+export const JobListingApplicationTable = pgTable(
+  'job_listing_applications',
+  {
+    jobListingId: uuid()
+      .references(() => JobListingTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    userId: varchar()
+      .references(() => UserTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    coverLetter: text(),
+    rating: integer(),
+    stage: applicationStageEnum().notNull().default('applied'),
+    createdAt,
+    updatedAt,
+  },
+  table => [primaryKey({ columns: [table.jobListingId, table.userId] })]
+);
 
 export const jobListingApplicationRelations = relations(
   JobListingApplicationTable,
