@@ -2,13 +2,20 @@
 
 import { db } from '@/drizzle/db';
 import { JobListingTable } from '@/drizzle/schema';
-import { getCurrentOrganization } from '@/services/clerk/lib/getCurrentAuth';
+import {
+  getCurrentOrganization,
+  getCurrentUser
+} from '@/services/clerk/lib/getCurrentAuth';
 import { hasOrgUserPermission } from '@/services/clerk/lib/orgUserPermissions';
+import { getMatchingJobListings } from '@/services/inngest/ai/getMatchingJobListings';
 import { and, eq } from 'drizzle-orm';
 import { cacheTag } from 'next/dist/server/use-cache/cache-tag';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { getJobListingIdTag } from '../db/cache/jobListings';
+import {
+  getJobListingGlobalTag,
+  getJobListingIdTag
+} from '../db/cache/jobListings';
 import {
   deleteJobListing as deleteJobListingDb,
   insertJobListing,
@@ -19,7 +26,7 @@ import {
   hasReachedMaxPublishedJobListings
 } from '../lib/planFeatureHelpers';
 import { getNextJobListingStatus } from '../lib/utils';
-import { jobListingSchema } from './schemas';
+import { jobListingAiSearchSchema, jobListingSchema } from './schemas';
 
 export async function createJobListing(
   unsafeData: z.infer<typeof jobListingSchema>
@@ -182,5 +189,54 @@ async function getJobListing(id: string, orgId: string) {
       eq(JobListingTable.id, id),
       eq(JobListingTable.organizationId, orgId)
     ),
+  });
+}
+
+export async function getAiJobListingSearchResults(
+  unsafeData: z.infer<typeof jobListingAiSearchSchema>
+): Promise<
+  { error: true; message: string } | { error: false; jobIds: string[] }
+> {
+  const { success, data } = jobListingAiSearchSchema.safeParse(unsafeData);
+
+  if (!success) {
+    return {
+      error: true,
+      message: 'There was an error processing your search query',
+    };
+  }
+
+  const { userId } = await getCurrentUser();
+
+  if (userId == null) {
+    return {
+      error: true,
+      message: 'You need an account to use AI job search',
+    };
+  }
+
+  const allListings = await getPublicJobListings();
+  const matchedListings = await getMatchingJobListings(
+    data.query,
+    allListings,
+    { maxNumberOfJobs: 10 }
+  );
+
+  if (matchedListings.length == 0) {
+    return {
+      error: true,
+      message: 'No jobs match your search criteria',
+    };
+  }
+
+  return { error: false, jobIds: matchedListings };
+}
+
+async function getPublicJobListings() {
+  'use cache';
+  cacheTag(getJobListingGlobalTag());
+
+  return db.query.JobListingTable.findMany({
+    where: eq(JobListingTable.status, 'published'),
   });
 }
