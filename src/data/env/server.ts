@@ -11,6 +11,7 @@ export const env = createEnv({
     CLERK_SECRET_KEY: z.string().nonempty(),
     CLERK_WEBHOOK_SECRET: z.string().nonempty(),
     UPLOADTHING_TOKEN: z.string().nonempty(),
+    GEMINI_API_KEY: z.string().nonempty(),
   },
   createFinalSchema: env => {
     return z.object(env).transform(val => {

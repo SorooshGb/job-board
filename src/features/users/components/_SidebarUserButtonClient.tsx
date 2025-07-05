@@ -62,7 +62,7 @@ export default function SidebarUserButtonClient(
           <UserIcon className="mr-1" /> Profile
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/user/settings/notifications">
+          <Link href="/user-settings/notifications">
             <SettingsIcon className="mr-1" /> Settings
           </Link>
         </DropdownMenuItem>

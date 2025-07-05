@@ -20,9 +20,7 @@ import {
   toolbarPlugin
 } from '@mdxeditor/editor';
 import { Ref } from 'react';
-
-export const markdownClassNames =
-  'max-w-none prose prose-neutral dark:prose-invert font-sans';
+import { markdownClassNames } from './MarkdownRenderer';
 
 export default function InternalMarkDownEditor(
   { ref, className, ...props }: MDXEditorProps & { ref?: Ref<MDXEditorMethods> }
@@ -35,7 +33,7 @@ export default function InternalMarkDownEditor(
       {...props}
       className={cn(
         markdownClassNames,
-        isDarkMode && 'dark-theme prose-invert',
+        isDarkMode && 'dark-theme',
         className
       )}
       suppressHtmlProcessing
