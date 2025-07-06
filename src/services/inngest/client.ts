@@ -1,3 +1,4 @@
+import { JobListingTable } from '@/drizzle/schema';
 import {
   DeletedObjectJSON,
   OrganizationJSON,
@@ -24,6 +25,22 @@ type Events = {
     data: { jobListingId: string; userId: string };
   };
   'app/resume.uploaded': { user: { id: string } };
+  'app/email.daily-user-job-listings': {
+    data: {
+      aiPrompt?: string;
+      jobListings: (
+        & Omit<
+          typeof JobListingTable.$inferSelect,
+          'createdAt' | 'postedAt' | 'updatedAt' | 'status' | 'organizationId'
+        >
+        & { organizationName: string }
+      )[];
+    };
+    user: {
+      email: string;
+      name: string;
+    };
+  };
 };
 
 export const inngest = new Inngest({
