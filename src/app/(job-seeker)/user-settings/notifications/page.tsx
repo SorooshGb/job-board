@@ -2,7 +2,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import { Card, CardContent } from '@/components/ui/card';
 import { db } from '@/drizzle/db';
 import { UserNotificationSettingsTable } from '@/drizzle/schema';
-import NotificationForm from '@/features/users/components/NotificationForm';
+import NotificationsForm from '@/features/users/components/NotificationsForm';
 import { getUserNotificationSettingsIdTag } from '@/features/users/db/cache/userNotificationSettings';
 import { getCurrentUser } from '@/services/clerk/lib/getCurrentAuth';
 import { eq } from 'drizzle-orm';
@@ -39,7 +39,7 @@ async function SuspendedComponent() {
 async function SuspendedForm({ userId }: { userId: string }) {
   const notificationSettings = await getNotificationSettings(userId);
 
-  return <NotificationForm notificationSettings={notificationSettings} />;
+  return <NotificationsForm notificationSettings={notificationSettings} />;
 }
 
 async function getNotificationSettings(userId: string) {

@@ -21,7 +21,7 @@ import { z } from 'zod';
 import { userNotificationSettingsSchema } from '../actions/schemas';
 import { updateUserNotificationSettings } from '../actions/userNotificationSettingsActions';
 
-export default function NotificationForm(
+export default function NotificationsForm(
   { notificationSettings }: {
     notificationSettings?: Pick<
       typeof UserNotificationSettingsTable.$inferSelect,
