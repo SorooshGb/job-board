@@ -1,15 +1,27 @@
 'use server';
 
 import { db } from '@/drizzle/db';
-import { JobListingTable, UserResumeTable } from '@/drizzle/schema';
+import {
+  ApplicationStage,
+  applicationStages,
+  JobListingTable,
+  UserResumeTable
+} from '@/drizzle/schema';
 import { getJobListingIdTag } from '@/features/jobListings/db/cache/jobListings';
 import { getUserResumeIdTag } from '@/features/users/db/cache/userResumes';
-import { getCurrentUser } from '@/services/clerk/lib/getCurrentAuth';
+import {
+  getCurrentOrganization,
+  getCurrentUser
+} from '@/services/clerk/lib/getCurrentAuth';
+import { hasOrgUserPermission } from '@/services/clerk/lib/orgUserPermissions';
 import { inngest } from '@/services/inngest/client';
 import { and, eq } from 'drizzle-orm';
 import { cacheTag } from 'next/dist/server/use-cache/cache-tag';
 import { z } from 'zod';
-import { insertJobListingApplication } from '../db/jobListingApplications';
+import {
+  insertJobListingApplication,
+  updateJobListingApplication
+} from '../db/jobListingApplications';
 import { newJobListingApplicationSchema } from './schemas';
 
 export async function createJobListingApplication(
@@ -55,6 +67,83 @@ export async function createJobListingApplication(
   };
 }
 
+export async function updateJobListingApplicationStage(
+  { userId, jobListingId }: { userId: string; jobListingId: string },
+  unsafeStage: ApplicationStage
+) {
+  const { success, data: stage } = z.enum(applicationStages).safeParse(
+    unsafeStage
+  );
+
+  if (!success) {
+    return {
+      error: true,
+      message: 'Invalid stage',
+    };
+  }
+
+  if (
+    !(await hasOrgUserPermission('org:job_listing_applications:change_stage'))
+  ) {
+    return {
+      error: true,
+      message: 'You don\'t have permission to update the stage',
+    };
+  }
+
+  const { orgId } = await getCurrentOrganization();
+  const jobListing = await getJobListing(jobListingId);
+  if (
+    orgId == null || jobListing == null || orgId !== jobListing.organizationId
+  ) {
+    return {
+      error: true,
+      message: 'You don\'t have permission to update the stage',
+    };
+  }
+
+  await updateJobListingApplication({ jobListingId, userId }, { stage });
+}
+
+export async function updateJobListingApplicationRating(
+  { userId, jobListingId }: { userId: string; jobListingId: string },
+  unsafeRating: number | null
+) {
+  const { success, data: rating } = z.number().min(1).max(5).nullable()
+    .safeParse(
+      unsafeRating
+    );
+
+  if (!success) {
+    return {
+      error: true,
+      message: 'Invalid rating',
+    };
+  }
+
+  if (
+    !(await hasOrgUserPermission('org:job_listing_applications:change_rating'))
+  ) {
+    return {
+      error: true,
+      message: 'You don\'t have permission to update the rating',
+    };
+  }
+
+  const { orgId } = await getCurrentOrganization();
+  const jobListing = await getJobListing(jobListingId);
+  if (
+    orgId == null || jobListing == null || orgId !== jobListing.organizationId
+  ) {
+    return {
+      error: true,
+      message: 'You don\'t have permission to update the rating',
+    };
+  }
+
+  await updateJobListingApplication({ jobListingId, userId }, { rating });
+}
+
 async function getPublicJobListing(id: string) {
   'use cache';
   cacheTag(getJobListingIdTag(id));
@@ -75,5 +164,15 @@ async function getUserResume(userId: string) {
   return db.query.UserResumeTable.findFirst({
     where: eq(UserResumeTable.userId, userId),
     columns: { userId: true },
+  });
+}
+
+async function getJobListing(id: string) {
+  'use cache';
+  cacheTag(getJobListingIdTag(id));
+
+  return db.query.JobListingTable.findFirst({
+    where: eq(JobListingTable.id, id),
+    columns: { organizationId: true },
   });
 }
