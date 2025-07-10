@@ -44,7 +44,7 @@ import { StateSelectItems } from './StateSelectItems';
 const NONE_SELECT_VALUE = 'none';
 
 type JobListingFormProps = {
-  jobListing: Pick<
+  jobListing?: Pick<
     typeof JobListingTable.$inferSelect,
     | 'title'
     | 'description'

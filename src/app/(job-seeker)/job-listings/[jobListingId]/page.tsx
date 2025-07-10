@@ -103,7 +103,7 @@ async function JobListingDetails({ params, searchParams }: Props) {
     .organization
     .name
     .split(' ')
-    .splice(0, 4)
+    .slice(0, 4)
     .map((word) => word[0])
     .join('');
 
@@ -220,7 +220,7 @@ async function ApplyButton({ jobListingId }: { jobListingId: string }) {
       <DialogTrigger asChild>
         <Button>Apply</Button>
       </DialogTrigger>
-      <DialogContent className="md:max-w-3xl max-h[calc(100%-rem)] overflow-hidden flex flex-col">
+      <DialogContent className="md:max-w-3xl max-h-[calc(100%-2rem)] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Application</DialogTitle>
           <DialogDescription>

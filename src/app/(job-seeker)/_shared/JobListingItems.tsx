@@ -114,7 +114,7 @@ function JobListingListItems({ jobListing, organization }: {
   const nameInitials = organization
     .name
     .split(' ')
-    .splice(0, 4)
+    .slice(0, 4)
     .map(word => word[0])
     .join('');
 

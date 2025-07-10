@@ -23,8 +23,6 @@ async function SuspendedPage() {
 
   if (jobListing == null) redirect('/employer/job-listings/new');
   else redirect(`/employer/job-listings/${jobListing.id}`);
-
-  return 'hello';
 }
 
 async function getMostRecentJobListing(orgId: string) {
